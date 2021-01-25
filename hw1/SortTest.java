@@ -10,6 +10,9 @@ public class SortTest {
     
     int[] A3 = {13, 59, 24, 18, 33, 20, 11, 11, 13, 50, 10999, 97};
     verifyParallelSort(A3);
+
+    int[] A4 = {13, 59, 24, 18, 33, 20, 11, 11, 13, 50, 10999, 97, 123, 456, 83, 90, 200, 304, 478, 101};
+    verifyParallelSort(A4);
   }
 
   static void verifyParallelSort(int[] A) {
