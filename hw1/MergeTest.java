@@ -14,28 +14,42 @@ public class MergeTest {
      * @param numThreads number of threads to run PMerge with
      */
     public static void testRandom(int numThreads) {
-    	/*
+
+        // Complex test case
         Random rand = new Random();
         for(int i = 0; i<10; ++i) {
-            int aSize = rand.nextInt(200);
-            int bSize = rand.nextInt(200);
+            int aSize = rand.nextInt(20);
+            int bSize = rand.nextInt(20);
             int[] a = new int[aSize], b = new int[bSize];
             for(int j = 0; j<a.length; ++j)
-                a[j] = rand.nextInt();
+                a[j] = rand.nextInt(100);
             for(int j = 0; j<b.length; ++j)
-                b[j] = rand.nextInt();
+                b[j] = rand.nextInt(100);
             int[] c = new  int[aSize + bSize];
+            System.out.println("i " + i);
+            System.out.println("c length " + c.length);
 
             Arrays.sort(a);
             Arrays.sort(b);
             PMerge.parallelMerge(a, b, c, numThreads);
             verify(a, b, c);
-        }*/
-    	int[] a = {1,2,3,4};
-    	int[] b = {2,4,6,8};
-    	int[] c = new int[a.length+b.length];
-        PMerge.parallelMerge(a, b, c, numThreads);
-        verify(a, b, c);
+        }
+
+
+//    	// Medium test case
+//    	int[] a = {1, 4, 10, 14, 16, 20, 40, 60, 80};
+//    	int[] b = {2};
+//    	//int[] b = {2, 4, 16, 18, 25, 35, 45, 80 };
+//    	int[] c = new int[a.length+b.length];
+//        PMerge.parallelMerge(a, b, c, numThreads);
+//        verify(a, b, c);
+
+//    	// Simple test case
+//    	int[] a = {1,2,3,4};
+//    	int[] b = {2,4,6};
+//    	int[] c = new int[a.length+b.length];
+//        PMerge.parallelMerge(a, b, c, numThreads);
+//        verify(a, b, c);
     }
 
     static void verify(int[] a, int[] b, int[] c) {
