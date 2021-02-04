@@ -9,22 +9,16 @@ public class PMerge{
 	public static void parallelMerge(int[] A, int[] B, int[]C, int numThreads){
 	    try {
 			ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
-			CountDownLatch latch = new CountDownLatch(A.length + B.length - 1);
 
 			for(int i=0; i<A.length; i++) {
-				threadPool.submit(new InsertionTask(A, B, C, i, latch));
+				threadPool.submit(new InsertionTask(A, B, C, i));
 			}
 			for(int i=0; i<B.length; i++) {
-				threadPool.submit(new InsertionTask(B, A, C, i, latch));
+				threadPool.submit(new InsertionTask(B, A, C, i));
 			}
 
 			threadPool.shutdown();
 			threadPool.awaitTermination(1, TimeUnit.MINUTES);
-			threadPool.shutdownNow();
-
-			//while(latch.getCount() > 0)
-				//System.out.println("latch count " + latch.getCount());
-			//latch.await();
 
 		} catch (Exception e) { System.err.println (e); }
 	}
@@ -35,33 +29,33 @@ class InsertionTask implements Callable<Void> {
 	private int[] B;
 	private int[] C;
 	private int idx;
-	private CountDownLatch latch;
 	
-	public InsertionTask(int[] A, int[] B, int[] C, int idx, CountDownLatch latch) {
+	public InsertionTask(int[] A, int[] B, int[] C, int idx) {
 		this.A = A;
 		this.B = B;
 		this.C = C;
 		this.idx = idx;
-		this.latch = latch;
 	}
 	
 	public Void call() {
+		int idx2 = 0;
 		// do binary search in B to find index of (idx2) A[idx] in B
-		int idx2 = binarySearch(B, A[idx]);
-		System.out.println(A[idx] + " " + idx + " " + idx2 + " " + (idx + idx2));
+		// don't binary search if B's length is 0.  It'll cause index out of bounds
+		if (B.length != 0) {
+			idx2 = binarySearch(B, A[idx]);
+		}
+		//System.out.println(A[idx] + " " + idx + " " + idx2 + " " + (idx + idx2));
 
 		// set C[idx + idx2] = A[idx];
 		C[C.length - 1 - (idx + idx2)] = A[idx];
-		//C[idx + idx2] = A[idx];
 		
 		// if B[idx2] == A[idx] then there's a duplicate
 		// if duplicate, then set C[idx + idx2 + 1] = A[idx]
-		if(B[idx2] == A[idx]) {
+		if(idx2<B.length && B[idx2] == A[idx]) {
 			C[C.length -1 - (idx + idx2 + 1)] = A[idx];
-			//C[idx + idx2 + 1] = A[idx];
 		}
-
-		latch.countDown();
+		
+		
 		return null;
 	}
 	
