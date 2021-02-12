@@ -16,3 +16,26 @@ public class CyclicBarrier {
 	    return index;
 	}
 }
+
+
+
+class CountingSemaphore {
+	int value;
+	public CountingSemaphore(int initValue) {
+		value = initValue;
+	}
+	public synchronized void P() throws InterruptedException {
+		while (value == 0)
+			try{
+				this.wait();
+			} catch(Exception e){
+				throw e;
+			}
+		value--;
+
+	}
+	public synchronized void V() {
+		value++;
+		notify();
+	}
+}
