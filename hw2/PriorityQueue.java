@@ -43,20 +43,40 @@ public class PriorityQueue {
 		}
 
 		synchronized (head) {
+			while(head.get()!=null && !head.get().tryLock()) {
+				//System.out.println("Dead");
+			}
+			
 			// add to empty list
 			if (head.get() == null) {
 				head.set(newNode);
 
-				size.incrementAndGet();
 				monitorLock.lock();
+				size.incrementAndGet();
 				notEmpty.signal();
 				monitorLock.unlock();
 
 				return 0;
 			}
-
-			head.get().lock();
+			
+			else if (newNode.priority>head.get().priority) {
+				Node oldHead = head.get();
+				newNode.next = oldHead;
+				head.set(newNode);
+				oldHead.unlock();
+				
+				monitorLock.lock();
+				size.incrementAndGet();
+				notEmpty.signal();
+				monitorLock.unlock();
+				
+				return 0;
+			}
+			
+			//head.get().lock();
 		}
+		
+		
 
 		Node cur = head.get();
 		Node prev = null;
@@ -83,7 +103,8 @@ public class PriorityQueue {
 			prev.next = newNode;
 			prev.unlock();
 		}
-
+		
+		/*
 		// insert at beginning
 		else if(prev == null){
 			synchronized (head) {
@@ -91,7 +112,7 @@ public class PriorityQueue {
 				head.set(newNode);
 				cur.unlock();
 			}
-		}
+		}*/
 
 		// insert in middle
 		else{
@@ -101,8 +122,8 @@ public class PriorityQueue {
 			prev.unlock();			//error
 		}
 
-		size.incrementAndGet();
 		monitorLock.lock();
+		size.incrementAndGet();
 		notEmpty.signal();
 		monitorLock.unlock();
 
@@ -123,6 +144,7 @@ public class PriorityQueue {
 				return index;
 			}
 			cur.unlock();
+			cur = cur.next;
 			index++;
 		}
 
@@ -195,6 +217,10 @@ class Node{
 
 	public void unlock(){
 		nodeLock.unlock();
+	}
+	
+	public boolean tryLock() {
+		return nodeLock.tryLock();
 	}
 
 }
