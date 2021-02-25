@@ -35,12 +35,15 @@ public class PriorityQueue {
 		Node newNode = new Node(name, priority);
 		int index = 0;
 
+
 		// wait if full
+		monitorLock.lock();
 		while(size.get() == maxSize) {
-			monitorLock.lock();
+			//System.out.println("Going to sleep");
 			notFull.await();
-			monitorLock.unlock();
+			//System.out.println("Waking up");
 		}
+		monitorLock.unlock();
 
 		synchronized (head) {
 			while(head.get()!=null && !head.get().tryLock()) {
@@ -166,9 +169,10 @@ public class PriorityQueue {
 
 			size.decrementAndGet();			// equal to --size
 
-			System.out.println(size);
+			//System.out.println(size);
+			// why is head.get() null
 
-			head.get().lock();				// why is head.get() null
+			while(!head.get().tryLock()){}		// lock on most up to date head, instead of locking on a potential outdated one
 			Node n = head.get();
 			Node newHead = n.next;
 

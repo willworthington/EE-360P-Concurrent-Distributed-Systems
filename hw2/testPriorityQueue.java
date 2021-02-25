@@ -1,8 +1,8 @@
 import java.util.Random;
 
 public class testPriorityQueue implements Runnable {
-	final static int SIZE = 3;
-	final static int queueSize = 3;
+	final static int SIZE = 100;
+	final static int queueSize = 5;
 
 	final PriorityQueue queue;
 	int priority;
@@ -19,7 +19,8 @@ public class testPriorityQueue implements Runnable {
 			//System.out.println("Added thread " + Thread.currentThread().getId() + " with priority " + priority);
 
 			Thread.sleep(500);
-			//System.out.println("First popped is " + queue.getFirst());
+			String first = queue.getFirst();
+			//System.out.println("First popped is " + first);
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -34,8 +35,8 @@ public class testPriorityQueue implements Runnable {
 		int[] priorities = {5, 9, 7};
 
 		for (int i = 0; i < SIZE; ++i) {
-			//t[i] = new Thread(new testPriorityQueue(queue, random.nextInt(10)));
-			t[i] = new Thread(new testPriorityQueue(queue, priorities[i]));
+			t[i] = new Thread(new testPriorityQueue(queue, random.nextInt(10)));
+			//t[i] = new Thread(new testPriorityQueue(queue, priorities[i]));
 		}
 		
 		for (int i = 0; i < SIZE; ++i) {
