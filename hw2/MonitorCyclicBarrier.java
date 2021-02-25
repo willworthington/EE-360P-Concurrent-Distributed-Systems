@@ -1,32 +1,32 @@
-/*
- * EID's of group members
- * 
- */
+// EID 1 = wjw692
+// EID 2 = zbt86
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MonitorCyclicBarrier {
 	int parties;
-	int count;
+	AtomicInteger count;
 
 	public MonitorCyclicBarrier(int parties) {
 		this.parties = parties;
-		this.count = 0;
+		this.count = new AtomicInteger(0);
 	}
 	
 	public synchronized int await() throws InterruptedException {
-		int index = parties-1-count;
+		int index = parties-1-count.get();
 
 		// perform task
-		count++;
+		count.getAndIncrement();
 
 		// wake others
 		if(index == 0){
 			notifyAll();
-			count = 0;
+			count.set(0);
 			return index;
 		}
 
 		// check and wait
-		if(count < parties){
+		if(count.get() < parties){
 			wait();
 		}
 
